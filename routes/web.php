@@ -16,7 +16,8 @@ Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('re
 Route::post('register', 'Auth\RegisterController@register');
 
 Route::post('/documents/{document}/shares', ['uses' => 'DocumentShareController@share', 'as' => 'documents.share.store']);
-Route::delete('/documents/{document}/shares/{share}', ['uses' => 'DocumentShareController@delete', 'as' => 'documents.share.delete']);
+Route::delete('/documents/{document}/shares/{share}', ['uses' => 'DocumentShareController@delete', 'as' => 'documents.share.destroy']);
+Route::get('/documents/{document}/shares', ['uses' => 'DocumentShareController@share', 'as' => 'documents.share.store']);
 Route::resource('/documents', 'DocumentsController');
 
 // Password Reset Routes...

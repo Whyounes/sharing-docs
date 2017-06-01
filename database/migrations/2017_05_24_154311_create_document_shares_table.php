@@ -14,6 +14,7 @@ class CreateDocumentSharesTable extends Migration
     public function up()
     {
         Schema::create('document_share', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('document_id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('view_count');

@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests\Documents;
 
+use App\Models\User;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class CreateRequest extends FormRequest
 {
@@ -14,7 +17,7 @@ class CreateRequest extends FormRequest
      */
     public function authorize()
     {
-        return true; // everyone is authorize to upload
+        return true; // everyone is authorized to upload
     }
 
     /**
@@ -24,10 +27,16 @@ class CreateRequest extends FormRequest
      */
     public function rules()
     {
+        /** @var User $user */
         $user = Auth::user();
 
         return [
-            'name' => 'required|unique:documents,id,user_id,'.$user->id, // document name must be unique for the user
+            'name' => [
+                'required',
+                Rule::unique('documents')->where(function (Builder $query) use($user) {
+                    $query->where('user_id', $user->id);
+                })
+            ], // document name must be unique for the user
             'document' => 'required|file|max:10000' // document must be a file and max size is 10M
         ];
     }

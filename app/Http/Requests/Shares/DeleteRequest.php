@@ -4,6 +4,7 @@ namespace App\Http\Requests\Shares;
 
 use App\Models\Document;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteRequest extends FormRequest
 {
@@ -19,7 +20,7 @@ class DeleteRequest extends FormRequest
         $document = $this->route('document');
 
         // only authorize if the document is owned by the current authenticated user
-        return (int)$this->user()->id === (int)$document->user_id;
+        return (int)Auth::user()->id === (int)$document->user_id;
     }
 
     /**

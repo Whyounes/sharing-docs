@@ -3,7 +3,11 @@
 namespace App\Http\Requests\Shares;
 
 use App\Models\Document;
+use App\Models\User;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class CreateRequest extends FormRequest
 {
@@ -29,8 +33,16 @@ class CreateRequest extends FormRequest
      */
     public function rules()
     {
+        /** @var User $user */
+        $user = Auth::user();
+
         return [
-            'user' => 'required|exists:users,id', // to share a document, you must specify the user to be shared with.
+            'user' => [
+                'required',
+                Rule::exists('users', 'email')->where(function(Builder $query) use($user) {
+                    $query->where('id', '!=', $user->id);
+                })
+            ], // to share a document, you must specify the user to be shared with.
         ];
     }
 }

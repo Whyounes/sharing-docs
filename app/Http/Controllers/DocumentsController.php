@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Documents\CreateRequest;
+use App\Http\Requests\Documents\DeleteRequest;
+use App\Http\Requests\Documents\ShowRequest;
+use App\Http\Requests\Documents\UpdateRequest;
 use App\Models\Document;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -21,8 +25,9 @@ class DocumentsController extends Controller
         /** @var User $authUser */
         $authUser = Auth::user();
 
-        return view('documents', [
-            'documents.index' => $authUser->documents
+        return view('documents.index', [
+            'documents' => $authUser->documents,
+            'sharedDocuments' => $authUser->shares,
         ]);
     }
 
@@ -39,10 +44,10 @@ class DocumentsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param CreateRequest|Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateRequest $request)
     {
         /**
          * @var User $authUser
@@ -56,8 +61,8 @@ class DocumentsController extends Controller
 
         $documentPath = $this->storeUserDocument($request, $document);
         $document->path = $documentPath;
-        $document->size = Storage::size($documentPath);
-        $document->mime_type = Storage::mimeType($documentPath);
+        $document->size = 1; //Storage::size($documentPath);
+        $document->mime_type = ''; //Storage::mimeType($documentPath);
         $document->save();
 
         return redirect()->route('documents.index')
@@ -98,10 +103,11 @@ class DocumentsController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param ShowRequest $request
      * @param Document $document
      * @return \Illuminate\Http\Response
      */
-    public function show(Document $document)
+    public function show(ShowRequest $request, Document $document)
     {
         // Load shares of the document
         $document->load(['shares']);
@@ -123,18 +129,18 @@ class DocumentsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param UpdateRequest|Request $request
      * @param Document $document
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Document $document)
+    public function update(UpdateRequest $request, Document $document)
     {
         $document->fill($request->intersect(['name']));
 
         $documentPath = $this->storeUserDocument($request, $document);
         $document->path = $documentPath;
-        $document->size = Storage::size($documentPath);
-        $document->mime_type = Storage::mimeType($documentPath);
+        $document->size = 1; //Storage::size($documentPath);
+        $document->mime_type = 'any'; //Storage::mimeType($documentPath);
         $document->save();
 
         return redirect()->back()->with('messages', [Lang::get('general.document_updated')]);
@@ -143,10 +149,10 @@ class DocumentsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Document $document
+     * @param DeleteRequest|Document $document
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Document $document)
+    public function destroy(DeleteRequest $request, Document $document)
     {
         $document->shares()->delete();
 

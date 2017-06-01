@@ -20,4 +20,9 @@ class User extends Model implements AuthenticatableInterface
     {
         return $this->hasMany(Document::class);
     }
+
+    public function shares()
+    {
+        return $this->hasMany(DocumentShare::class);
+    }
 }

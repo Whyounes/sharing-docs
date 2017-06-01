@@ -23,7 +23,7 @@ class DeleteRequest extends FormRequest
         $user = Auth::user();
         $document = $this->route('document');
 
-        return (int)$user->id === $document->user_id;
+        return (int)$user->id === (int)$document->user_id;
     }
 
     /**
