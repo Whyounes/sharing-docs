@@ -61,8 +61,8 @@ class DocumentsController extends Controller
 
         $documentPath = $this->storeUserDocument($request, $document);
         $document->path = $documentPath;
-        $document->size = 1; //Storage::size($documentPath);
-        $document->mime_type = ''; //Storage::mimeType($documentPath);
+        $document->size = /*Storage::size($documentPath)*/1;
+        $document->mime_type = /*Storage::mimeType($documentPath)*/'';
         $document->save();
 
         return redirect()->route('documents.index')
@@ -78,6 +78,12 @@ class DocumentsController extends Controller
      */
     protected function storeUserDocument(Request $request, Document $document)
     {
+        /*
+         * storeUserDocument pour enrigistrer le fichier envoyé
+           il retourne le chemin du fichier
+           apres en utilize ce chemin pour modifier les attributes du model $document
+           et en enregistre a la fin et en redirect
+        */
         $storagePath = config('app.document_storage_path');
 
         if ($request->file('document') && $request->file('document')->isValid()) {
@@ -111,6 +117,8 @@ class DocumentsController extends Controller
     {
         // Load shares of the document
         $document->load(['shares']);
+        
+        // ncrement views count
 
         return view('documents.show', ['document' => $document]);
     }
@@ -121,6 +129,7 @@ class DocumentsController extends Controller
      * @param Document $document
      * @return \Illuminate\Http\Response
      */
+    
     public function edit(Document $document)
     {
         return view('documents.show', ['document' => $document]);
@@ -139,8 +148,8 @@ class DocumentsController extends Controller
 
         $documentPath = $this->storeUserDocument($request, $document);
         $document->path = $documentPath;
-        $document->size = 1; //Storage::size($documentPath);
-        $document->mime_type = 'any'; //Storage::mimeType($documentPath);
+        $document->size = Storage::size($documentPath);
+        $document->mime_type = Storage::mimeType($documentPath);
         $document->save();
 
         return redirect()->back()->with('messages', [Lang::get('general.document_updated')]);

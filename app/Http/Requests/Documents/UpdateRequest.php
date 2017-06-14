@@ -23,7 +23,7 @@ class UpdateRequest extends FormRequest
         $user = Auth::user();
         $document = $this->route('document');
 
-        return (int)$user->id === $document->user_id;
+        return (int)$user->id === (int)$document->user_id;
     }
 
     /**
@@ -38,7 +38,7 @@ class UpdateRequest extends FormRequest
 
         return [
             'name' => 'required_if:document|unique:documents,id,user_id,'.$user->id, // document name must be unique for the user
-            'document' => 'sometimes|file|max:10000' // document must be a file and max size is 10M
+            'document' => 'sometimes|file|max:100000' // document must be a file and max size is 10M
         ];
     }
 }

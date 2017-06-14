@@ -54,11 +54,14 @@
                                     Login
                                 </button>
                             </div>
+                            
                         </div>
+                        <img src="{{URL::asset('/userlogin.png')}}" alt="box" height="100" width="100">
                     </form>
                 </div>
             </div>
         </div>
     </div>
+    
 </div>
 @endsection

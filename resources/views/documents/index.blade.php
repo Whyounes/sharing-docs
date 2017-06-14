@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="panel panel-default">
-                    <div class="panel-heading">
+                    <div class="panel-heading clearfix">
                         Documents
 
                         <a href="{{ route('documents.create') }}" class="btn btn-primary pull-right">
@@ -19,17 +19,18 @@
                                 @foreach($documents as $document)
                                     <li class="list-group-item">
                                         {{ $document->name }} - {{ $document->mime_type }}
-
-                                        <form action="{{ route("documents.destroy", $document) }}" method="post">
+                                        
+                                        <form class="pull-right" action="{{ route("documents.destroy", $document) }}" method="post">
                                             {{ csrf_field() }}
                                             {{ method_field('DELETE') }}
 
                                             <input type="submit" class="btn btn-danger" value="Delete"/>
                                         </form>
-
-                                        <a class="btn btn-primary" href="{{ route('documents.show', $document) }}">
+                                        &nbsp;
+                                        <a class="btn btn-primary pull-right" href="{{ route('documents.show', $document) }}">
                                             Details
                                         </a>
+                                        &nbsp;
                                     </li>
                                 @endforeach
                             </ul>
@@ -38,12 +39,14 @@
                         @endif
 
                         @if($sharedDocuments->count() > 0)
+                        <hr/>
+                            <h4>Documents shared with me</h4>
                             <ul class="list-group">
                                 @foreach($sharedDocuments as $share)
                                     <li class="list-group-item">
                                         {{ $share->document->name }} - {{ $share->document->mime_type }}
 
-                                        <a class="btn btn-primary"
+                                        <a class="btn btn-primary pull-right"
                                            href="{{ route('documents.show', $share->document) }}">
                                             Details
                                         </a>

@@ -37,7 +37,7 @@ class CreateRequest extends FormRequest
                     $query->where('user_id', $user->id);
                 })
             ], // document name must be unique for the user
-            'document' => 'required|file|max:10000' // document must be a file and max size is 10M
+            'document' => 'required|file|max:100000' // document must be a file and max size is 10M
         ];
     }
 }

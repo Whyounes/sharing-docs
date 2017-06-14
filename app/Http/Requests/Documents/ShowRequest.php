@@ -23,7 +23,7 @@ class ShowRequest extends FormRequest
         $user = Auth::user();
         $document = $this->route('document');
 
-        return (int)$user->id === $document->user_id || // to show document, you must be the owner OR
+        return (int)$user->id === (int)$document->user_id || // to show document, you must be the owner OR
             $document->shares()->where('user_id', $user->id)->count(); // the document must be shared with you
     }
 
