@@ -59,10 +59,11 @@ class DocumentsController extends Controller
             'user_id' => $authUser->id,
         ]);
 
+        $storagePath = config('app.document_storage_path');
         $documentPath = $this->storeUserDocument($request, $document);
-        $document->path = $documentPath;
-        $document->size = 1; //Storage::size($documentPath);
-        $document->mime_type = ''; //Storage::mimeType($documentPath);
+        $document->path = $storagePath . DIRECTORY_SEPARATOR . $authUser->id . DIRECTORY_SEPARATOR . $documentPath;
+        $document->size = Storage::size($document->path);
+        $document->mime_type = Storage::mimeType($document->path);
         $document->save();
 
         return redirect()->route('documents.index')
@@ -83,14 +84,14 @@ class DocumentsController extends Controller
         if ($request->file('document') && $request->file('document')->isValid()) {
             // If updating, we should delete old file
             if ($document && $document->path) {
-                Storage::delete($storagePath . DIRECTORY_SEPARATOR . $document->user_id . DIRECTORY_SEPARATOR . $document->path);
+                Storage::delete($document->path);
             }
 
             $uploadedFile = $request->file('document');
             $fileName = str_random(10) . "." . $uploadedFile->extension();
 
             Storage::put(
-                $storagePath . "/" . $document->user_id . "/" . $fileName,
+                $storagePath . DIRECTORY_SEPARATOR . $document->user_id . DIRECTORY_SEPARATOR . $fileName,
                 file_get_contents($uploadedFile->getRealPath())
             );
 
@@ -135,12 +136,15 @@ class DocumentsController extends Controller
      */
     public function update(UpdateRequest $request, Document $document)
     {
+        /** @var User $authUser */
+        $authUser = Auth::user();
         $document->fill($request->intersect(['name']));
 
+        $storagePath = config('app.document_storage_path');
         $documentPath = $this->storeUserDocument($request, $document);
-        $document->path = $documentPath;
-        $document->size = 1; //Storage::size($documentPath);
-        $document->mime_type = 'any'; //Storage::mimeType($documentPath);
+        $document->path = $storagePath . DIRECTORY_SEPARATOR . $authUser->id . DIRECTORY_SEPARATOR . $documentPath;
+        $document->size = Storage::size($document->path);
+        $document->mime_type = Storage::mimeType($document->path);
         $document->save();
 
         return redirect()->back()->with('messages', [Lang::get('general.document_updated')]);
@@ -156,8 +160,7 @@ class DocumentsController extends Controller
     {
         $document->shares()->delete();
 
-        $storagePath = config('app.document_storage_path');
-        Storage::delete($storagePath . "/" . $document->user_id . "/" . $document->path);
+        Storage::delete($document->path);
         $document->delete();
 
         return redirect()->route('documents.index')->with('messages', [Lang::get('general.document_deleted')]);

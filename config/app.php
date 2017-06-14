@@ -228,5 +228,5 @@ return [
 
     ],
 
-    'document_storage_path' => 'documents',
+    'document_storage_path' => 'public/documents',
 ];
